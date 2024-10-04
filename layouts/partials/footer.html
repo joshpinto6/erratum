@@ -1,5 +1,37 @@
 {{ $showFooter := default true .Site.Params.showFooter }}
 {{ if $showFooter }}
+    {{ if .Site.Params.buildInfo}}
+        {{- /* site build info */}}
+<p class="buildinfo">
+  {{- /* site build timestamp */}}
+  <time datetime="{{ now.Format "2006-01-02 15:04:05 MST" }}">Site built on: {{ now.Format "2006-01-02 15:04:05 MST" }}</time>
+
+  {{- with .Site.Params.git.last_commit -}}
+    {{- $commitUrl := "" -}}
+    {{- if (isset .Site.Params "git_info") -}}
+      {{- $git_host := .Site.Params.git_info.host -}}
+      {{- $git_user := .Site.Params.git_info.user -}}
+      {{- $git_repo := .Site.Params.git_info.repo -}}
+      {{ $commitUrl = printf "https://%s.com/%s/%s/-/commit/%s" $git_host $git_user $git_repo .hash }}
+    {{- end -}}
+    <span> from commit: </span>
+
+    {{- /* code */}}
+    <code>
+      {{- if eq $commitUrl "" }}
+        #{{ .short_hash }} |
+        {{ .subject }}
+      {{- else }}
+        <a href="{{ $commitUrl }}">
+          #{{ .short_hash }} |
+          {{ .subject }}
+        </a>
+      {{- end }}
+    </code>
+  {{- end -}}
+  {{/* gitinfo */}}
+</p>
+    {{ end }}
     {{ if not .Site.Params.footerContent }}
     <p>Powered by
         <a href="https://gohugo.io/">Hugo</a>
